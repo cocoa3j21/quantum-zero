@@ -34,5 +34,5 @@ print(restored)
 
 「天才的な技術の無駄遣いだな」「おかげでスクレイピングが止まらなくなったよ」と笑っていただけたら、ブラックホール観測の運用資金（生活費）としてサポートをお願いします！
 
-- [Buy Me a Coffee のリンクをここに貼る]
-- [GitHub Sponsors のリンクをここに貼る]
+- [[Buy Me a Coffee](https://buymeacoffee.com/cocoa.j.21)]
+- [GitHub Sponsors]
