@@ -1,0 +1,25 @@
+[project]
+name = "quantum-zero"
+version = "0.2.0"
+description = "Experimental handling of division by zero: QuantumState (v1) and AuditState (v2)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "cocoa3j21" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://github.com/cocoa3j21"
+"Buy Me a Coffee" = "https://www.buymeacoffee.com/cocoa3j21"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"

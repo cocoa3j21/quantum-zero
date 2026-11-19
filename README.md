@@ -1,38 +1,195 @@
-# 🌌 QuantumZero
+# QuantumZero
 
-「スクレイピング中に `ZeroDivisionError` でスクリプトが完全停止してキレそう」
-そんな悩みを、**ブラックホールの特異点と情報パラドックスの解決**によって物理学的に無効化する画期的な例外処理エンジンです。
+**ゼロ除算をどう扱うか**を、ブラックホールや宇宙の比喩で遊びながらコードにした、小さな実験用ライブラリです。  
+物理公式の正しさを証明するものではありません。Zenn の記事を読んだあと、この README だけで v1 / v2 の使い分けが分かるように書いています。
 
-AIと宇宙の真理について語り合っていたら、なぜか実用的な自動化ツールが完成しました。
+| リンク | URL |
+|--------|-----|
+| GitHub | https://github.com/cocoa3j21 |
+| Buy Me a Coffee | https://www.buymeacoffee.com/cocoa3j21 |
 
-## 🚀 特徴
+**ライセンス:** [MIT License](LICENSE)
 
-- **絶対に止まらない**: ゼロ除算が発生しても、システムは停止しません。
-- **情報の完全保存 (ユニタリ性の維持)**: 特異点（ゼロ）を通過しても元の値（被除数）を内部に保持します。
-- **可逆演算**: ゼロ除算された結果に再びゼロを掛けると、元の値が完全復元します（ホーキング放射の概念を実装）。
+---
 
-## 💻 使い方 (Usage)
+## QuantumZero とは
 
-使い方は非常にシンプルです。
+Python では `10 / 0` のように **0 で割ると `ZeroDivisionError`（ゼロ除算エラー）** になり、プログラムが止まります。
+
+QuantumZero は、そのときに代わりに **特別な状態オブジェクト** を返し、デモや実験的パイプラインを止めずに進める仕組みです。
+
+- **v1**（`quantum_zero.py`）… `QuantumState`。**`* 0` で被除数が戻る**など、情報パラドックスの**比喩デモ**向け。
+- **v2**（`quantum_zero_v2.py`）… `AuditState`。**いつ・何を 0 で割ったかを記録**し、あとから `resolve()` などで**明示的に**扱う向け。
+
+---
+
+## v1 と v2 の違い（一覧）
+
+| 項目 | v1 `QuantumState` | v2 `AuditState` |
+|------|-------------------|-----------------|
+| ねらい | 比喩的な「情報復元」デモ | 監査（audit＝記録・追跡）可能な未定義状態 |
+| 0 除算後の `* 0` | 直後なら**数値**が戻る場合がある | 常に **AuditState のまま** |
+| 復元 | `* 0` に埋め込み | **`restore()`** のみ（比喩・明示 API） |
+| 同士の `==` | どの QS も **常に True** | 被除数・除数・理由が同じときだけ True |
+| dict / set | 使いにくい（キーにできない） | **キー・要素に使える** |
+| 未定義の見分け | 公開 API ほぼ無し | `is_undefined`, `to_log()`, `to_dict()` |
+| 数値として続ける | 暗黙の挙動が多い | **`resolve()` / `raise_if_undefined()`** |
+
+**おすすめ:** 記事・デモの雰囲気は **v1**、ログや「あとでどうするか決める」コードは **v2**。
+
+---
+
+## v1: QuantumState
+
+- ファイル: [`quantum_zero.py`](quantum_zero.py)
+- `safe_divide(質量, 距離)` … 距離が 0 のとき `QuantumState`、それ以外は通常の数値（float）
+- `QuantumState * 0` … **safe_divide 直後**なら被除数が返る比喩（一度でも足し算などすると復元できない）
+- 詳しい挙動は `tests/test_quantum_state_contract.py` などに **現状仕様として固定** 済み
+
+### v1 最小例
 
 ```python
 from quantum_zero import safe_divide
 
-# 普通はここで ZeroDivisionError になりシステムが死ぬ
-# しかし QuantumZero なら「特異点状態」として生き残る！
 density = safe_divide(100, 0)
-print(density) 
-# => QuantumState(dividend=100)
-
-# 情報は失われていない！ゼロを掛けると元の数が復元（パラドックス解決）
-restored = density * 0
-print(restored) 
-# => 100
+print(density)       # QuantumState(dividend=100)
+print(density * 0)   # 100（比喩的な「復元」）
 ```
 
-## ☕ Support / 投げ銭
+### v1 の 4 デモ
 
-「天才的な技術の無駄遣いだな」「おかげでスクレイピングが止まらなくなったよ」と笑っていただけたら、ブラックホール観測の運用資金（生活費）としてサポートをお願いします！
+ルートで実行すると、次の 4 シミュレーションが順に動きます。
 
-- [Buy Me a Coffee](https://buymeacoffee.com/cocoa3j21)
-- GitHub Sponsors
+```bash
+cd Labs/blackhole_sim   # リポジトリを clone した場合は blackhole_sim へ
+python quantum_zero.py
+```
+
+| # | 内容 |
+|---|------|
+| 1 | ブラックホール（距離 r → 0） |
+| 2 | ビッグバン（時刻 t → 0 を超える） |
+| 3 | 自己エネルギー（r → 0 の発散） |
+| 4 | 情報パラドックス（`* 0` で被除数復元のデモ） |
+
+---
+
+## v2: AuditState
+
+- ファイル: [`quantum_zero_v2.py`](quantum_zero_v2.py)
+- `safe_divide(dividend, divisor)` … divisor が 0 のとき `AuditState`（例外なし）
+- **監査情報:** 被除数・除数・理由・作成時刻・説明文
+- **明示 API:** `resolve()`, `raise_if_undefined()`, `restore()`, `to_log()`, `to_dict()`
+
+### v2 最小例
+
+```python
+from quantum_zero_v2 import AuditState, safe_divide
+
+state = safe_divide(100, 0)
+assert isinstance(state, AuditState)
+assert state.is_undefined
+
+print(state.to_log())              # ログ1行
+print(state.resolve(0))            # 代わりに 0 を使う
+# state.raise_if_undefined()      # ここで初めて ZeroDivisionError にしてもよい
+```
+
+`restore()` は被除数を返しますが、**数学的に 0 除算を正しい結果にするものではありません**（デモ用の比喩です）。
+
+### v2 の 8 デモ
+
+```bash
+python quantum_zero_v2.py
+```
+
+| # | 関数 | 内容 |
+|---|------|------|
+| 1 | `simulate_blackhole_v2` | ブラックホール |
+| 2 | `simulate_bigbang_v2` | ビッグバン |
+| 3 | `simulate_self_energy_v2` | 自己エネルギー |
+| 4 | `simulate_information_paradox_v2` | 情報パラドックス（`restore()` と `* 0` の違い） |
+| 5 | `simulate_auditable_undefined` | `to_dict()` の監査記録 |
+| 6 | `simulate_resolve` | `resolve(default)` |
+| 7 | `simulate_raise_if_undefined` | 例外に戻す |
+| 8 | `simulate_to_log` | ログ1行出力 |
+
+---
+
+## テスト（pytest）
+
+**pytest** … Python 用の自動テストツールです。
+
+```bash
+cd Labs/blackhole_sim
+python -m pip install pytest    # 初回のみ
+python -m pytest tests/ -v --tb=short
+```
+
+| テスト群 | ファイル | 役割 |
+|----------|----------|------|
+| v1 契約 | `test_quantum_state_contract.py` ほか v1 系 4 ファイル | 現状仕様の固定・既知の問題の記録 |
+| v2 | `test_quantum_zero_v2.py` | AuditState の必須 API |
+
+開発用依存は `pyproject.toml` の `dev` オプション（`pytest` のみ）に記載しています。
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+---
+
+## これは何で、何でないか
+
+### これは
+
+- Zenn 記事や GitHub とつなげる **実験・デモ用** のサンプル
+- 「0 除算をどう設計するか」を議論するための **2 つの対照実装**（v1 比喩 / v2 監査）
+- **学習用**のシミュレーション出力（宇宙・ブラックホールのたとえ）
+
+### これではない
+
+- 物理学や宇宙論の正当なシミュレータ
+- 銀行・医療・インフラなど **本番のクリティカルな計算** のゼロ除算対策
+- 「ゼロ除算を数学的に正しく解く」ライブラリ
+
+---
+
+## 本番環境での使用に関する注意
+
+- **v1** は合計・平均・`+=` が **静かに別の型** になるなど、既知の設計上の問題があります（テストに記録済み）。
+- **v2** でも `bool(AuditState)` は常に **True** です。**if 文だけでは「正常」とは判定できません。** `is_undefined` や `resolve()` を使ってください。
+- **v2** の `AuditState` は `min` / `max` / `sorted` / `<` などで **TypeError** になります（未定義同士を大小比較できないため）。
+- いずれも **必ずテストを読み、自分の用途で再検証** してから使ってください。
+
+---
+
+## プロジェクト構成
+
+```
+blackhole_sim/
+├── quantum_zero.py          # v1
+├── quantum_zero_v2.py       # v2
+├── tests/
+├── README.md
+├── LICENSE
+├── pyproject.toml
+└── .gitignore
+```
+
+---
+
+## Support
+
+記事やコードが役に立った・面白かったら、激励やコーヒー代をいただけると嬉しいです。
+
+- [Buy Me a Coffee](https://www.buymeacoffee.com/cocoa3j21)
+- [GitHub](https://github.com/cocoa3j21)
+
+---
+
+## MIT License
+
+Copyright (c) 2026 cocoa3j21
+
+詳細は [LICENSE](LICENSE) を参照してください。
