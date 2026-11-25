@@ -50,6 +50,24 @@ QuantumZero は、そのときに代わりに **特別な状態オブジェク�
 
 **おすすめ:** 記事・デモの雰囲気は **v1**、ログや「あとでどうするか決める」コードは **v2**。
 
+新規のコード・学習用の「ちゃんと扱いたい」経路は **v2 を先に**見てください（下記 **4 xfail** は v1 だけの既知の仕様ギャップです）。
+
+---
+
+## v1 の 4 xfail（仕様メモ・v2 推奨導線）
+
+`pytest` では v1 向けに **4 本だけ `@pytest.mark.xfail`** があります。これは「バグの隠蔽」ではなく、**v1 に取り込まない設計判断**と**将来改善のメモ**です。本番寄り・監査が必要な用途では **v2（`AuditState`）** を使う想定で書いています。
+
+| # | テスト（ファイル） | xfail が示すこと（v1 の現状仕様） | v2 での推奨導線 |
+| :---: | :--- | :--- | :--- |
+| 1 | `test_future_public_undefined_flag`（`test_quantum_state_contract.py`） | 未定義かどうかを示す**公開フラグがない**（`isinstance` 頼み） | `AuditState.is_undefined` |
+| 2 | `test_future_equality_distinguishes_dividend`（`test_equality_collection_semantics.py`） | 異なる被除数の `QuantumState` も **`==` が常に True** | 同じ被除数・除数・理由のときだけ `==` |
+| 3 | `test_future_recovery_after_arithmetic_chain`（`test_information_recovery_scope.py`） | 足し算など**演算チェーン後**は被除数追跡・`* 0` 復元が効かない | `restore()` と監査フィールド（明示 API） |
+| 4 | `test_future_pipeline_raises_on_singular`（`test_safe_divide_pipeline.py`） | `safe_divide` が混ざった合計などで**特異点を検出・警告しない** | `raise_if_undefined()` / `resolve()` で明示処理 |
+
+- **v1 を直して xfail を 0 にする**ことは、このリポジトリでは最優先にしていません（比喩デモ・Zenn v1 との対照を維持）。
+- **v2 のテスト群**（`test_quantum_zero_v2.py`）に同種の xfail はありません。
+
 ---
 
 ## v1: QuantumState
@@ -57,7 +75,7 @@ QuantumZero は、そのときに代わりに **特別な状態オブジェク�
 - ファイル: [`quantum_zero.py`](quantum_zero.py)
 - `safe_divide(質量, 距離)` … 距離が 0 のとき `QuantumState`、それ以外は通常の数値（float）
 - `QuantumState * 0` … **safe_divide 直後**なら被除数が返る比喩（一度でも足し算などすると復元できない）
-- 詳しい挙動は `tests/test_quantum_state_contract.py` などに **現状仕様として固定** 済み
+- 詳しい挙動は `tests/test_quantum_state_contract.py` などに **現状仕様として固定** 済み（上記 **4 xfail** は「v1 ではやらない／v2 でやる」境界）
 
 ### v1 最小例
 
@@ -170,7 +188,7 @@ python -m pip install -e ".[dev]"
 
 ## 本番環境での使用に関する注意
 
-- **v1** は合計・平均・`+=` が **静かに別の型** になるなど、既知の設計上の問題があります（テストに記録済み）。
+- **v1** は合計・平均・`+=` が **静かに別の型** になるなど、既知の設計上の問題があります（**4 xfail** と契約テストに記録済み。**本番風の経路は v2 推奨**）。
 - **v2** でも `bool(AuditState)` は常に **True** です。**if 文だけでは「正常」とは判定できません。** `is_undefined` や `resolve()` を使ってください。
 - **v2** の `AuditState` は `min` / `max` / `sorted` / `<` などで **TypeError** になります（未定義同士を大小比較できないため）。
 - いずれも **必ずテストを読み、自分の用途で再検証** してから使ってください。
@@ -201,7 +219,7 @@ blackhole_sim/
 
 | # | 項目 | 状態 |
 | :---: | :--- | :--- |
-| 1 | pytest 回帰 | **確認済み**（2026-11-25: 70 passed / 4 xfailed） |
+| 1 | pytest 回帰 + v1 xfail 仕様 | **確認済み**（2026-11-25: 70 passed / 4 xfailed — README「4 xfail」節で v2 導線を明記） |
 | 2 | Zenn v2 | **公開済み** — [記事](https://zenn.dev/cocoa3j21/articles/40d0f05d16b40f)（2026-11-20） |
 | 3 | リモート一本化 | **済** — 公開先は [quantum-zero](https://github.com/cocoa3j21/quantum-zero) のみ（Labs 索引からリンク） |
 
