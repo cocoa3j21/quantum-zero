@@ -5,10 +5,21 @@
 
 | リンク | URL |
 |--------|-----|
-| GitHub | https://github.com/cocoa3j21 |
+| GitHub（本リポジトリ） | https://github.com/cocoa3j21/quantum-zero |
+| Labs 索引（開発正本の親） | [`../README.md`](../README.md) |
 | Buy Me a Coffee | https://www.buymeacoffee.com/cocoa3j21 |
 
 **ライセンス:** [MIT License](LICENSE)
+
+## 開発正本と公開リポジトリ
+
+| 役割 | 場所 |
+| :--- | :--- |
+| **開発正本** | `D:\Workspace\Labs\blackhole_sim\`（ワークスペース内。`ai-budget-meter` にはサブツリーとして未収録） |
+| **公開リポジトリ（一本化）** | [github.com/cocoa3j21/quantum-zero](https://github.com/cocoa3j21/quantum-zero)（`origin` のみ） |
+| **Zenn 続編草案** | [`zenn_quantum_zero_v2.md`](zenn_quantum_zero_v2.md)（`published: false`・**未投稿**） |
+
+**テスト（2026-11-25）:** `python -m pytest -q` → **70 passed**, **4 xfailed**（v1 の既知設計課題を記録した期待失敗）。
 
 ---
 
@@ -170,12 +181,27 @@ python -m pip install -e ".[dev]"
 blackhole_sim/
 ├── quantum_zero.py          # v1
 ├── quantum_zero_v2.py       # v2
+├── quantum_physics_research/  # QuantumZero と物理学の関係（調査メモ）
 ├── tests/
 ├── README.md
 ├── LICENSE
 ├── pyproject.toml
 └── .gitignore
 ```
+
+物理学・数学の正確な位置づけは [quantum_physics_research/INVESTIGATION.md](quantum_physics_research/INVESTIGATION.md) を参照してください（コードの比喩と現実の量子論を分けて記載）。
+
+---
+
+## 今後の予定
+
+比喩デモと監査 API の**解釈実験**です。物理学の「正解」や本番保証とは書きません。
+
+| # | 項目 | 状態 |
+| :---: | :--- | :--- |
+| 1 | pytest 回帰 | **確認済み**（2026-11-25: 70 passed / 4 xfailed） |
+| 2 | Zenn v2 投稿 | **草案のみ** — [`zenn_quantum_zero_v2.md`](zenn_quantum_zero_v2.md) |
+| 3 | リモート一本化 | **済** — 公開先は [quantum-zero](https://github.com/cocoa3j21/quantum-zero) のみ（Labs 索引からリンク） |
 
 ---
 
