@@ -6,6 +6,8 @@
 | リンク | URL |
 |--------|-----|
 | GitHub（本リポジトリ） | https://github.com/cocoa3j21/quantum-zero |
+| **Zenn v2（監査ログ）** | **[公開済み](https://zenn.dev/cocoa3j21/articles/40d0f05d16b40f)** |
+| Zenn v1（比喩デモ） | [公開済み](https://zenn.dev/cocoa3j21/articles/e612809f1ed613) |
 | Labs 索引（開発正本の親） | [`../README.md`](../README.md) |
 | Buy Me a Coffee | https://www.buymeacoffee.com/cocoa3j21 |
 
@@ -17,7 +19,7 @@
 | :--- | :--- |
 | **開発正本** | `D:\Workspace\Labs\blackhole_sim\`（ワークスペース内。`ai-budget-meter` にはサブツリーとして未収録） |
 | **公開リポジトリ（一本化）** | [github.com/cocoa3j21/quantum-zero](https://github.com/cocoa3j21/quantum-zero)（`origin` のみ） |
-| **Zenn 続編草案** | [`zenn_quantum_zero_v2.md`](zenn_quantum_zero_v2.md)（`published: false`・**未投稿**） |
+| **Zenn** | v2 [40d0f05d16b40f](https://zenn.dev/cocoa3j21/articles/40d0f05d16b40f)（公開）· 原稿 [`zenn_quantum_zero_v2.md`](zenn_quantum_zero_v2.md) · v1 [e612809f1ed613](https://zenn.dev/cocoa3j21/articles/e612809f1ed613) |
 
 **テスト（2026-11-25）:** `python -m pytest -q` → **70 passed**, **4 xfailed**（v1 の既知設計課題を記録した期待失敗）。
 
@@ -200,7 +202,7 @@ blackhole_sim/
 | # | 項目 | 状態 |
 | :---: | :--- | :--- |
 | 1 | pytest 回帰 | **確認済み**（2026-11-25: 70 passed / 4 xfailed） |
-| 2 | Zenn v2 投稿 | **草案のみ** — [`zenn_quantum_zero_v2.md`](zenn_quantum_zero_v2.md) |
+| 2 | Zenn v2 | **公開済み** — [記事](https://zenn.dev/cocoa3j21/articles/40d0f05d16b40f)（2026-11-20） |
 | 3 | リモート一本化 | **済** — 公開先は [quantum-zero](https://github.com/cocoa3j21/quantum-zero) のみ（Labs 索引からリンク） |
 
 ---
